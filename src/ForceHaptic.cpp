@@ -111,7 +111,7 @@ void HapticForce::startForceNode(){
 
    //ForceThread.join();
 }
-//testetette
+//aha - dani 2019
 void HapticForce::SensorForceCallBack(const geometry_msgs::Vector3::ConstPtr &data){
    sensorForces.x = data->x;
    sensorForces.y = data->y;
