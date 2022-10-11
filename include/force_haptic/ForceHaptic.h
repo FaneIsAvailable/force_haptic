@@ -26,7 +26,8 @@ class HapticForce
 
         void startForceNode();
 
-
+        //comentariu
+        //alt comentariu
    
     private:
         ros::NodeHandle node;
