@@ -91,10 +91,10 @@ void HapticForce::ProcessForce(double x, double y, double z){
                - c7*(c6*(c5*(c2*s4 - c3*c4*s2) + s2*s3*s5) - s6*(c2*c4 + c3*s2*s4))) + y*(c7*(s5*(c2*s4 - c3*c4*s2) - c5*s2*s3) 
                + s7*(c6*(c5*(c2*s4 - c3*c4*s2) + s2*s3*s5) - s6*(c2*c4 + c3*s2*s4)));
 
-
+   // change for commit
     this->output_forces[0] = x1;
     this->output_forces[1] = y1;
-    this->output_forces[2] = z1;
+    this->output_forces[2] = z;
     outputForces.x = x1;
     outputForces.y = y1;
     outputForces.z = z1;
