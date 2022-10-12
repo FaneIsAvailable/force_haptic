@@ -1,5 +1,7 @@
 #include <force_haptic/ForceHaptic.h>
 
+ // #define DEBUGG ///> debugging tool
+
 HapticForce::HapticForce(ros::NodeHandle node, float loopRate, std::string forceTopic, 
                          std::string sensorForceTopic, std::string robotForceTopic, std::string robotPositionTopic):
                          node(node), loopRate(loopRate), forceTopic(forceTopic), sensorForceTopic(sensorForceTopic),
@@ -27,17 +29,24 @@ void HapticForce::PublishForceData(){
 
       geometry_msgs::Vector3 currentOutputForce;
 
-      currentOutputForce.x = (sensorForces.x + robotForces.x)/2;
-      currentOutputForce.y = (sensorForces.y + robotForces.y)/2;
-      currentOutputForce.z = (sensorForces.z + robotForces.z)/2;
+      #ifdef DEBUGG
+         //this is the initial DEBUGG logic
+         currentOutputForce.x = (sensorForces.x + robotForces.x)/2;
+         currentOutputForce.y = (sensorForces.y + robotForces.y)/2;
+         currentOutputForce.z = (sensorForces.z + robotForces.z)/2;
+
+      #endif
 
       ProcessForce(currentOutputForce.x, currentOutputForce.y, currentOutputForce.z);
 
       
 
       this->force_pub.publish(outputForces);
-      //std::cout<< sensorForces.z<<std::endl;
-
+      #ifdef DEBUGG
+         std::cout<< sensorForces.x <<" ";
+         std::cout<< sensorForces.y <<" ";
+         std::cout<< sensorForces.z <<"\n";
+      #endif
       this->loopRate.sleep();
    }
 
@@ -49,32 +58,53 @@ void HapticForce::PublishForceData(){
 void HapticForce::ProcessForce(double x, double y, double z){
 
 
-   if (x < -MAX_FORCE) x = -MAX_FORCE;
-   if (y < -MAX_FORCE) y = -MAX_FORCE;
-   if (z < -MAX_FORCE) z = -MAX_FORCE;
-   if (x > MAX_FORCE) x = MAX_FORCE;
-   if (y > MAX_FORCE) y = MAX_FORCE;
-   if (z > MAX_FORCE) z = MAX_FORCE;
+   /**====================================== //
+    * ********Force Limitations************* //
+    * ====================================== //
+   */                                        //
+   if (x < -MAX_FORCE) x = -MAX_FORCE;       //
+   if (y < -MAX_FORCE) y = -MAX_FORCE;       //
+   if (z < -MAX_FORCE) z = -MAX_FORCE;       //
+   if (x > MAX_FORCE) x = MAX_FORCE;         //
+   if (y > MAX_FORCE) y = MAX_FORCE;         //
+   if (z > MAX_FORCE) z = MAX_FORCE;         //
+                                             //   
+   //========================================//
 
-   double s1 = sin(this->robot_position[0]);
-   double s2 = sin(this->robot_position[1]);
-   double s3 = sin(this->robot_position[2]);
-   double s4 = sin(this->robot_position[3]);
-   double s5 = sin(this->robot_position[4]);
-   double s6 = sin(this->robot_position[5]);
-   double s7 = sin(this->robot_position[6]);
+   /**=======================================//
+    * ***********Sine values**************** //
+    * =======================================//
+   */                                        //
+   double s1 = sin(this->robot_position[0]); //
+   double s2 = sin(this->robot_position[1]); //
+   double s3 = sin(this->robot_position[2]); //
+   double s4 = sin(this->robot_position[3]); //
+   double s5 = sin(this->robot_position[4]); //
+   double s6 = sin(this->robot_position[5]); // 
+   double s7 = sin(this->robot_position[6]); //
+                                             //
+   //========================================//
 
+   /**=======================================//
+    * **********Cosine Values*************** //
+    * =======================================//
+   */                                        //      
+   double c1 = cos(this->robot_position[0]); //
+   double c2 = cos(this->robot_position[1]); //
+   double c3 = cos(this->robot_position[2]); //
+   double c4 = cos(this->robot_position[3]); //
+   double c5 = cos(this->robot_position[4]); //
+   double c6 = cos(this->robot_position[5]); //
+   double c7 = cos(this->robot_position[6]); //
+                                             //
+   //========================================//                                          
 
-   double c1 = cos(this->robot_position[0]);
-   double c2 = cos(this->robot_position[1]);
-   double c3 = cos(this->robot_position[2]);
-   double c4 = cos(this->robot_position[3]);
-   double c5 = cos(this->robot_position[4]);
-   double c6 = cos(this->robot_position[5]);
-   double c7 = cos(this->robot_position[6]);
-
-
-
+   /*===============================================================
+    **********Wierd math Formuli Generated in MATLAB****************
+    *===============================================================
+    * 
+    * the reference frame transformation takes place here in order to relocate TCP forces into base frame
+   */
    double x1 = z*(c6*(s4*(s1*s3 - c1*c2*c3) + c1*c4*s2) - s6*(c5*(c4*(s1*s3 - c1*c2*c3) - c1*s2*s4) 
                + s5*(c3*s1 + c1*c2*s3))) - x*(c7*(s6*(s4*(s1*s3 - c1*c2*c3) + c1*c4*s2) + c6*(c5*(c4*(s1*s3 - c1*c2*c3) - c1*s2*s4) 
                + s5*(c3*s1 + c1*c2*s3))) - s7*(s5*(c4*(s1*s3 - c1*c2*c3) - c1*s2*s4) - c5*(c3*s1* + c1*c2*s3))) 
@@ -91,28 +121,29 @@ void HapticForce::ProcessForce(double x, double y, double z){
                - c7*(c6*(c5*(c2*s4 - c3*c4*s2) + s2*s3*s5) - s6*(c2*c4 + c3*s2*s4))) + y*(c7*(s5*(c2*s4 - c3*c4*s2) - c5*s2*s3) 
                + s7*(c6*(c5*(c2*s4 - c3*c4*s2) + s2*s3*s5) - s6*(c2*c4 + c3*s2*s4)));
 
-   // change for commit
-    this->output_forces[0] = x1;
-    this->output_forces[1] = y1;
-    this->output_forces[2] = z;
-    outputForces.x = x1;
-    outputForces.y = y1;
-    outputForces.z = z1;
+   
+
+
+    this->output_forces[0] = x1; //this can be removed
+    this->output_forces[1] = y1; //this can also be removed
+    this->output_forces[2] = z1; //by the law to convection, this can as well be removed
+    outputForces.x = x1;   //for vector attribution
+    outputForces.y = y1;   //
+    outputForces.z = z1;   //
 }
 
 void HapticForce::GetInputData(){
-   std::cout<<"zis ist ein tird test";
+   //std::cout<<"zis ist ein tird test";
+   //this is basically unused and could be naturally BANISHED INTO NONEXISTANCE@horvathd2
 }
 
 void HapticForce::startForceNode(){
-  // boost::thread ForceThread(boost::bind(&HapticForce::SensorForceCallBack, this));
-
+  
    PublishForceData();
-
-   //ForceThread.join();
+   
+   //this function is redundant, might be a good idea to be removed
 }
-//aha - dani 2019
-//comentariu
+
 
 void HapticForce::SensorForceCallBack(const geometry_msgs::Vector3::ConstPtr &data){
    sensorForces.x = data->x;
