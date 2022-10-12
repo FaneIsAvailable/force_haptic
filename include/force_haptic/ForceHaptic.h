@@ -18,31 +18,34 @@ class HapticForce
         HapticForce(ros::NodeHandle node, float loopRate, std::string forceTopic, std::string sensorForceTopic, std::string robotForceTopic, std::string robotPositionTopic);
         ~HapticForce();
 
+
+        /**
+         * @author @FaneIsAvailable
+         * @brief ROS publish calls
+        */
         void PublishForceData(){
-            /**
-             * @author @FaneIsAvailable
-             * @brief ROS publish calls
-            */
+
         };
 
-        void ProcessForce(double x, double y, double z){
-            /**
-             * @author Iakab Stefan
-             * @param interpolated forces
-             * @remark this might be irrelevant
-             * @brief force limitation in device limits
-             *        force vector transformation from TCP reference frame to robot base frame
-             *        tranformation equations generated in MATLAB
-            */
-        }; 
+         /**
+         * @author Iakab Stefan
+         * @param interpolated forces
+         * @remark this might be irrelevant
+         * @brief force limitation in device limits
+         *        force vector transformation from TCP reference frame to robot base frame
+         *        tranformation equations generated in MATLAB
+        */
+        void ProcessForce(double x, double y, double z); 
         
         void GetInputData();// i might have forgotten to implement  this
 
+
+        /**
+         * @author @FaneIsAvailable
+         * @remark this also might be irrelevant
+        */
         void startForceNode(){
-            /**
-             * @author @FaneIsAvailable
-             * @remark this also might be irrelevant
-            */
+
         };
    
     private:
@@ -89,7 +92,9 @@ class HapticForce
          * ================================
         */
         void SensorForceCallBack(const geometry_msgs::Vector3::ConstPtr &data);
-        void RobotForceCallBack(const geometry_msgs::WrenchStamped::ConstPtr &data);   
+
+        void RobotForceCallBack(const geometry_msgs::WrenchStamped::ConstPtr &data);  
+         
         void RobotPositionCallBack(const iiwa_msgs::JointPosition::ConstPtr &data);
 
 };
