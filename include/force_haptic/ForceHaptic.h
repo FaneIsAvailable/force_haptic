@@ -1,3 +1,13 @@
+/**
+ * @author @FaneIsAvailable
+ * @class Haptic Force
+ * @date 12.08.2022
+ * @details solution for Real time Force feedback of an Omega 7 haptic device
+ *          forces from kuka iiwa are used as base reference, forces from robotiq ft300 are used as additional information
+ * 
+*/
+
+
 
 #pragma once
 
@@ -20,7 +30,6 @@ class HapticForce
 
 
         /**
-         * @author @FaneIsAvailable
          * @brief ROS publish calls
         */
         void PublishForceData(){
@@ -28,7 +37,6 @@ class HapticForce
         };
 
          /**
-         * @author Iakab Stefan
          * @param interpolated forces
          * @remark this might be irrelevant
          * @brief force limitation in device limits
@@ -41,7 +49,6 @@ class HapticForce
 
 
         /**
-         * @author @FaneIsAvailable
          * @remark this also might be irrelevant
         */
         void startForceNode(){
@@ -94,7 +101,7 @@ class HapticForce
         void SensorForceCallBack(const geometry_msgs::Vector3::ConstPtr &data);
 
         void RobotForceCallBack(const geometry_msgs::WrenchStamped::ConstPtr &data);  
-         
+
         void RobotPositionCallBack(const iiwa_msgs::JointPosition::ConstPtr &data);
 
 };
