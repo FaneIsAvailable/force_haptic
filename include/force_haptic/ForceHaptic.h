@@ -60,7 +60,7 @@ class HapticForce
         ros::Rate loopRate;
       
         /**================================
-         **********ROS node members********
+         * ********ROS node members********
          * ================================ 
         */
         ros::Publisher force_pub;           //publishes force vector to /chai3d/force
