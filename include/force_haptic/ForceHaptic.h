@@ -25,35 +25,46 @@
 class HapticForce
 {
     public:
+        /**
+         * @brief Construct a new Haptic Force object
+         * 
+         * @param node ROS node
+         * @param loopRate rate of the ROS node 
+         * @param forceTopic output force topic name
+         * @param sensorForceTopic input sensor force topic name
+         * @param robotForceTopic input robot force topic name
+         * @param robotPositionTopic input robot position topic name
+         */
         HapticForce(ros::NodeHandle node, float loopRate, std::string forceTopic, std::string sensorForceTopic, std::string robotForceTopic, std::string robotPositionTopic);
         ~HapticForce();
 
-
         /**
-         * @brief ROS publish calls
-        */
+         * @brief Publish all data on the ros NODE
+         * 
+         */
         void PublishForceData(){
 
         };
 
-         /**
-         * @param interpolated forces
-         * @remark this might be irrelevant
+        /**
          * @brief force limitation in device limits
          *        force vector transformation from TCP reference frame to robot base frame
          *        tranformation equations generated in MATLAB
-        */
+         * 
+         * @param x x component of force vector
+         * @param y y component of force vector
+         * @param z z component of force vector
+         */
         void ProcessForce(double x, double y, double z); 
         
         void GetInputData();// i might have forgotten to implement  this
 
 
         /**
+         * @brief start the ROS node
          * @remark this also might be irrelevant
-        */
-        void startForceNode(){
-
-        };
+         */
+        void startForceNode();
    
     private:
         ros::NodeHandle node;
@@ -98,6 +109,7 @@ class HapticForce
          * ****ROS subscriber Callback*****
          * ================================
         */
+       
         void SensorForceCallBack(const geometry_msgs::Vector3::ConstPtr &data);
 
         void RobotForceCallBack(const geometry_msgs::WrenchStamped::ConstPtr &data);  
