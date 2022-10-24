@@ -17,6 +17,7 @@
 #include "iiwa_msgs/JointPosition.h"
 #include <memory>
 #include "geometry_msgs/WrenchStamped.h"
+#include "std_msgs/Float64.h"
 
 
 
@@ -65,7 +66,8 @@ class HapticForce
          * @remark this also might be irrelevant
          */
         void startForceNode();
-   
+        double gripperMass;
+
     private:
         ros::NodeHandle node;
         ros::Rate loopRate;
@@ -79,6 +81,14 @@ class HapticForce
         ros::Subscriber robot_force_sub;    //subscribes to /iiwa_stack/state/StampedWrench
         ros::Subscriber robot_position_sub; //subscribes to /iiwa_stack/state/JointPosition
 
+        ros::Publisher J1_pub;
+        ros::Publisher J2_pub;
+        ros::Publisher J3_pub;
+        ros::Publisher J4_pub;
+        ros::Publisher J5_pub;
+        ros::Publisher J6_pub;
+        ros::Publisher J7_pub;
+
         /**================================
          * ********ROS Topic Names*********
          * ================================
@@ -87,6 +97,8 @@ class HapticForce
         std::string robotForceTopic;
         std::string robotPositionTopic;
         std::string forceTopic;
+
+        
 
         /**================================
          * ******ROS published Data********
@@ -105,14 +117,13 @@ class HapticForce
         double robot_position[7];
         double output_forces[3];
 
-        double gripperMass;
-
+        
         /**================================
          * ****ROS subscriber Callback*****
          * ================================
         */
        
-        void SensorForceCallBack(const geometry_msgs::Vector3::ConstPtr &data);
+        void SensorForceCallBack(const geometry_msgs::WrenchStamped::ConstPtr &data);
 
         void RobotForceCallBack(const geometry_msgs::WrenchStamped::ConstPtr &data);  
 

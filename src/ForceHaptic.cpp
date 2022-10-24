@@ -9,13 +9,26 @@ HapticForce::HapticForce(ros::NodeHandle node, float loopRate, std::string force
                             
                             this->force_pub = this->node.advertise<geometry_msgs::Vector3>(this->forceTopic.c_str(),1);
                             
-                            this->sensor_force_sub = this->node.subscribe<geometry_msgs::Vector3>(this->sensorForceTopic.c_str(), 1, &HapticForce::SensorForceCallBack, this);
+                            this->sensor_force_sub = this->node.subscribe<geometry_msgs::WrenchStamped>(this->sensorForceTopic.c_str(), 1, &HapticForce::SensorForceCallBack, this);
                             this->robot_force_sub = this->node.subscribe<geometry_msgs::WrenchStamped>(this->robotForceTopic.c_str(), 1, &HapticForce::RobotForceCallBack, this);
                             this->robot_position_sub = this->node.subscribe<iiwa_msgs::JointPosition>(this->robotPositionTopic.c_str(), 1, &HapticForce::RobotPositionCallBack, this);
                             std::cout<<"afisez acest element straniu";
 
+                           std::string j1 = "/iiwa/PositionJointInterface_J1_controller/command";
+                           std::string j2 = "/iiwa/PositionJointInterface_J2_controller/command";
+                           std::string j3 = "/iiwa/PositionJointInterface_J3_controller/command";
+                           std::string j4 = "/iiwa/PositionJointInterface_J4_controller/command";
+                           std::string j5 = "/iiwa/PositionJointInterface_J5_controller/command";
+                           std::string j6 = "/iiwa/PositionJointInterface_J6_controller/command";
+                           std::string j7 = "/iiwa/PositionJointInterface_J7_controller/command";
                             
-
+                           this->J1_pub = this->node.advertise<std_msgs::Float64>(j1.c_str(),1);
+                           this->J2_pub = this->node.advertise<std_msgs::Float64>(j2.c_str(),1);
+                           this->J3_pub = this->node.advertise<std_msgs::Float64>(j3.c_str(),1);
+                           this->J4_pub = this->node.advertise<std_msgs::Float64>(j4.c_str(),1);
+                           this->J5_pub = this->node.advertise<std_msgs::Float64>(j5.c_str(),1);
+                           this->J6_pub = this->node.advertise<std_msgs::Float64>(j6.c_str(),1);
+                           this->J7_pub = this->node.advertise<std_msgs::Float64>(j7.c_str(),1);
 
                          }
 HapticForce::~HapticForce(){
@@ -38,12 +51,32 @@ void HapticForce::PublishForceData(){
          currentOutputForce.z = (sensorForces.z + robotForces.z)/2;
 
       #endif
-
+      currentOutputForce = sensorForces;
       ProcessForce(currentOutputForce.x, currentOutputForce.y, currentOutputForce.z);
 
       
 
       this->force_pub.publish(outputForces);
+
+      std_msgs::Float64 j1,j2,j3,j4,j5,j6,j7;
+      
+      j1.data = this->robot_position[0];
+      j2.data = this->robot_position[1];
+      j3.data = this->robot_position[2];
+      j4.data = this->robot_position[3];
+      j5.data = this->robot_position[4];
+      j6.data = this->robot_position[5];
+      j7.data = this->robot_position[6];
+
+
+      this->J1_pub.publish(j1);
+      this->J2_pub.publish(j2);
+      this->J3_pub.publish(j3);
+      this->J4_pub.publish(j4);
+      this->J5_pub.publish(j5);
+      this->J6_pub.publish(j6);
+      this->J7_pub.publish(j7);
+
       #ifdef DEBUGG
          std::cout<< sensorForces.x <<" ";
          std::cout<< sensorForces.y <<" ";
@@ -87,17 +120,22 @@ void HapticForce::ProcessForce(double x, double y, double z){
                                              //
    //========================================//                                          
 
-   ros::param::param<double>("/gripper_mass",gripperMass,0);
+  
    double g = gripperMass * G_CONST;
 
    double x_g = -g*(c2*(s4*(s5*s7 - c5*c6*c7) + c4*c7*s6) - s2*(s3*(c5*s7 + c6*c7*s5) + c3*(c4*(s5*s7 - c5*c6*c7) - c7*s4*s6)));
    double y_g = g*(c2*(s4*(c7*s5 + c5*c6*s7) - c4*s6*s7) - s2*(s3*(c5*c7 - c6*s5*s7) + c3*(c4*(c7*s5 + c5*c6*s7) + s4*s6*s7)));
    double z_g = g*(c2*(c4*c6 + c5*s4*s6) + s2*(c3*(c6*s4 - c4*c5*s6) + s3*s5*s6));
 
+   std::cout<<x_g<< " "<< y_g<< " "<<z_g<<'\n';
+   std::cout<<"=============================";
+   std::cout<<x<< " "<< y<< " "<<z<<'\n';
+
    x = x - x_g;
    y = y - y_g;
    z = z - z_g;
-
+   std::cout<<x<< " "<< y<< " "<<z<<'\n';
+   
    /**====================================== //
     * ********Force Limitations************* //
     * ====================================== //
@@ -135,6 +173,8 @@ void HapticForce::ProcessForce(double x, double y, double z){
 
    
 
+   std::cout<<x1<< " "<< y1<< " "<<z1<<'\n';
+   std::cout<<"------------------------------\n";
 
     this->output_forces[0] = x1; //this can be removed
     this->output_forces[1] = y1; //this can also be removed
@@ -157,10 +197,10 @@ void HapticForce::startForceNode(){
 }
 
 
-void HapticForce::SensorForceCallBack(const geometry_msgs::Vector3::ConstPtr &data){
-   sensorForces.x = data->x;
-   sensorForces.y = data->y;
-   sensorForces.z = data->z;
+void HapticForce::SensorForceCallBack(const geometry_msgs::WrenchStamped::ConstPtr &data){
+   sensorForces.x = data->wrench.force.x;
+   sensorForces.y = data->wrench.force.y;
+   sensorForces.z = data->wrench.force.z;
 }
 
 void HapticForce::RobotForceCallBack(const geometry_msgs::WrenchStamped::ConstPtr &data){

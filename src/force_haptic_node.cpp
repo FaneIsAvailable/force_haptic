@@ -7,8 +7,9 @@ int main(int argc, char** argv){
     ros::init(argc, argv, "force_haptic_node");
 
     ros::NodeHandle node;
-
-    HapticForce force(node, 4000,"/chai3d/force", "force/sensor_force", "force/robot_force", "force/robot_position");
+    //node.setParam("/gripper_mass", 2.3);
+    HapticForce force(node, 4000,"/chai3d/force", "/robotiq_ft_wrench", "force/robot_force", "/iiwa/state/JointPosition");
+    node.param<double>("/gripper_mass", force.gripperMass, 0);
 
     force.startForceNode();
 
