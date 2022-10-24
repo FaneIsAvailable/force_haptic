@@ -13,7 +13,9 @@ HapticForce::HapticForce(ros::NodeHandle node, float loopRate, std::string force
                             this->robot_force_sub = this->node.subscribe<geometry_msgs::WrenchStamped>(this->robotForceTopic.c_str(), 1, &HapticForce::RobotForceCallBack, this);
                             this->robot_position_sub = this->node.subscribe<iiwa_msgs::JointPosition>(this->robotPositionTopic.c_str(), 1, &HapticForce::RobotPositionCallBack, this);
                             std::cout<<"afisez acest element straniu";
+
                             
+
 
                          }
 HapticForce::~HapticForce(){
@@ -85,7 +87,8 @@ void HapticForce::ProcessForce(double x, double y, double z){
                                              //
    //========================================//                                          
 
-   double g = GRIPPER_MASS * G_CONST;
+   ros::param::param<double>("/gripper_mass",gripperMass,0);
+   double g = gripperMass * G_CONST;
 
    double x_g = -g*(c2*(s4*(s5*s7 - c5*c6*c7) + c4*c7*s6) - s2*(s3*(c5*s7 + c6*c7*s5) + c3*(c4*(s5*s7 - c5*c6*c7) - c7*s4*s6)));
    double y_g = g*(c2*(s4*(c7*s5 + c5*c6*s7) - c4*s6*s7) - s2*(s3*(c5*c7 - c6*s5*s7) + c3*(c4*(c7*s5 + c5*c6*s7) + s4*s6*s7)));

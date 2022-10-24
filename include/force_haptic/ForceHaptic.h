@@ -22,7 +22,7 @@
 
 #define MAX_FORCE 10.0f
 #define G_CONST  -9.81f
-#define GRIPPER_MASS 2.3f
+
 
 class HapticForce
 {
@@ -104,6 +104,8 @@ class HapticForce
         double robot_forces[7];
         double robot_position[7];
         double output_forces[3];
+
+        double gripperMass;
 
         /**================================
          * ****ROS subscriber Callback*****
