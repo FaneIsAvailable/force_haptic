@@ -57,20 +57,6 @@ void HapticForce::PublishForceData(){
 
 void HapticForce::ProcessForce(double x, double y, double z){
 
-
-   /**====================================== //
-    * ********Force Limitations************* //
-    * ====================================== //
-   */                                        //
-   if (x < -MAX_FORCE) x = -MAX_FORCE;       //
-   if (y < -MAX_FORCE) y = -MAX_FORCE;       //
-   if (z < -MAX_FORCE) z = -MAX_FORCE;       //
-   if (x > MAX_FORCE) x = MAX_FORCE;         //
-   if (y > MAX_FORCE) y = MAX_FORCE;         //
-   if (z > MAX_FORCE) z = MAX_FORCE;         //
-                                             //   
-   //========================================//
-
    /**=======================================//
     * ***********Sine values**************** //
     * =======================================//
@@ -98,6 +84,29 @@ void HapticForce::ProcessForce(double x, double y, double z){
    double c7 = cos(this->robot_position[6]); //
                                              //
    //========================================//                                          
+
+   double g = GRIPPER_MASS * G_CONST;
+
+   double x_g = -g*(c2*(s4*(s5*s7 - c5*c6*c7) + c4*c7*s6) - s2*(s3*(c5*s7 + c6*c7*s5) + c3*(c4*(s5*s7 - c5*c6*c7) - c7*s4*s6)));
+   double y_g = g*(c2*(s4*(c7*s5 + c5*c6*s7) - c4*s6*s7) - s2*(s3*(c5*c7 - c6*s5*s7) + c3*(c4*(c7*s5 + c5*c6*s7) + s4*s6*s7)));
+   double z_g = g*(c2*(c4*c6 + c5*s4*s6) + s2*(c3*(c6*s4 - c4*c5*s6) + s3*s5*s6));
+
+   x = x - x_g;
+   y = y - y_g;
+   z = z - z_g;
+
+   /**====================================== //
+    * ********Force Limitations************* //
+    * ====================================== //
+   */                                        //
+   if (x < -MAX_FORCE) x = -MAX_FORCE;       //
+   if (y < -MAX_FORCE) y = -MAX_FORCE;       //
+   if (z < -MAX_FORCE) z = -MAX_FORCE;       //
+   if (x > MAX_FORCE) x = MAX_FORCE;         //
+   if (y > MAX_FORCE) y = MAX_FORCE;         //
+   if (z > MAX_FORCE) z = MAX_FORCE;         //
+                                             //   
+   //========================================//
 
    /*===============================================================
     **********Wierd math Formuli Generated in MATLAB****************
