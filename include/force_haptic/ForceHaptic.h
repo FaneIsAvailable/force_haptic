@@ -42,9 +42,7 @@ class HapticForce
          * @brief Publish all data on the ros NODE
          * 
          */
-        void PublishForceData(){
-
-        };
+        void PublishForceData();
 
         /**
          * @brief force limitation in device limits

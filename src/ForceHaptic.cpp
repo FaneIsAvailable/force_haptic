@@ -12,12 +12,9 @@ HapticForce::HapticForce(ros::NodeHandle node, float loopRate, std::string force
                             this->sensor_force_sub = this->node.subscribe<geometry_msgs::Vector3>(this->sensorForceTopic.c_str(), 1, &HapticForce::SensorForceCallBack, this);
                             this->robot_force_sub = this->node.subscribe<geometry_msgs::WrenchStamped>(this->robotForceTopic.c_str(), 1, &HapticForce::RobotForceCallBack, this);
                             this->robot_position_sub = this->node.subscribe<iiwa_msgs::JointPosition>(this->robotPositionTopic.c_str(), 1, &HapticForce::RobotPositionCallBack, this);
-                            std::cout<<"afisez acest element straniu";
-                            
+}
 
-                         }
 HapticForce::~HapticForce(){
-   //idk why this shit aint working without this ohter shit but i hope its gonna work this way
 }
 
 void HapticForce::PublishForceData(){
@@ -121,12 +118,6 @@ void HapticForce::ProcessForce(double x, double y, double z){
                - c7*(c6*(c5*(c2*s4 - c3*c4*s2) + s2*s3*s5) - s6*(c2*c4 + c3*s2*s4))) + y*(c7*(s5*(c2*s4 - c3*c4*s2) - c5*s2*s3) 
                + s7*(c6*(c5*(c2*s4 - c3*c4*s2) + s2*s3*s5) - s6*(c2*c4 + c3*s2*s4)));
 
-   
-
-
-    this->output_forces[0] = x1; //this can be removed
-    this->output_forces[1] = y1; //this can also be removed
-    this->output_forces[2] = z1; //by the law to convection, this can as well be removed
     outputForces.x = x1;   //for vector attribution
     outputForces.y = y1;   //
     outputForces.z = z1;   //
